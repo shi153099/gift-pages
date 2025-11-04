@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘礼物</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            font-family: "Microsoft Yahei", sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .modal {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        /* 回归基础矩形弹窗，无额外装饰 */
+        .card {
+            border-radius: 6px;
+            margin: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+            position: absolute;
+            display: none;
+            z-index: 5;
+            min-width: 200px;
+            padding: 4px 12px 0;
+            opacity: 0;
+            animation: popScale 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes popScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(15px);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1) translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        /* 上半部分（横线以上）：固定窄宽度 */
+        .card-header {
+            display: flex;
+            align-items: center;
+            padding: 0 8px 3px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 4px;
+        }
+        .card-header .icon {
+            color: #e91e63;
+            margin-right: 8px;
+            font-size: 16px;
+            animation: heartBeat 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            transform-origin: center;
+            opacity: 0;
+        }
+        @keyframes heartBeat {
+            0% {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
+            60% {
+                transform: scale(0.9);
+            }
+            80% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .card-header .title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        /* 下半部分（横线以下）：比上半部分宽10px */
+        .card-content {
+            text-align: center;
+            font-size: 16px;
+            padding: 0 18px 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal" id="initialModal">
+        <h3>🎃 神秘的礼物</h3>
+        <p>您有一份神秘礼物，确定要打开吗？</p >
+        <button class="btn" onclick="openGift()">确定</button>
+    </div>
+
+    <!-- 《与我无关》（阿冗原版）稳定音频链接 -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://freetyst.nf.migu.cn/public/product9th/product26/2024/05/2817/2024052817471032801/128k.mp3" type="audio/mpeg">
+    
+
+    <div id="cardsContainer">
+        <div class="card" style="display:none">
+            <div class="card-header">
+                <span class="icon">💝</span>
+                <span class="title">提示</span>
+            </div>
+            <div class="card-content">天冷了，多穿衣服</div>
+        </div>
+    </div>
+
+    <script>
+        const gradients = [
+            "linear-gradient(to right, #fce4ec, #e3f2fd)",
+            "linear-gradient(to right, #e8f5e9, #c8e6c9)",
+            "linear-gradient(to right, #fff3e0, #ffe0b2)",
+            "linear-gradient(to right, #f3e5f5, #e1bee7)",
+            "linear-gradient(to right, #e3f2fd, #bbdefb)"
+        ];
+
+        const tips = [
+            "天冷了，多穿衣服", "记得吃水果", "珍惜每一刻", "金榜题名", "别熬夜",
+            "早点休息", "我想你了", "梦想成真", "别太累啦", "顺顺利利", "爱你"
+        ];
+
+        let popupInterval;
+
+        function openGift() {
+           
+
+            document.getElementById('initialModal').style.display = 'none';
+            let zIndex = 1;
+
+            popupInterval = setInterval(() => {
+                const cardTemplate = document.querySelector('.card');
+                const newCard = cardTemplate.cloneNode(true);
+                newCard.style.display = 'block';
+                newCard.style.zIndex = zIndex++;
+
+                // 随机动画延迟
+                const randomDelay = Math.random() * 0.3;
+                newCard.style.animationDelay = `${randomDelay}s`;
+                newCard.querySelector('.icon').style.animationDelay = `${randomDelay + 0.1}s`;
+
+                // 随机渐变与文本
+                const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+                newCard.style.background = randomGradient;
+                const randomTip = tips[Math.floor(Math.random() * tips.length)];
+                newCard.querySelector('.card-content').textContent = randomTip;
+
+                // 随机定位
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                const left = Math.floor(Math.random() * (screenWidth - 230)) + 'px';
+                const top = Math.floor(Math.random() * (screenHeight - 60)) + 'px';
+                newCard.style.left = left;
+                newCard.style.top = top;
+
+                document.body.appendChild(newCard);
+            }, 200);
+
+            // 15秒直接结束，无提示
+            setTimeout(() => {
+                clearInterval(popupInterval);
+                audio.pause();
+            }, 15000);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            clearInterval(popupInterval);
+        });
+    </script>
+</body>
+</html>
